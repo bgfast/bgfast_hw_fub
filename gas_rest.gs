@@ -3,6 +3,34 @@
   // Your Follow Up Boss API key
   var apiKey = settingsSheet.getRange("B2").getValue();
 
+function formatCell(a1notation, fontfamily, fontsize, fontweight, fontstyle, background, fontcolor) {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var cell = sheet.getRange(a1notation);
+    
+    // Set the font family 
+    cell.setFontFamily(fontfamily);
+    
+    // Set the font size 
+    cell.setFontSize(fontsize);
+    
+    // Set the font weight 
+    cell.setFontWeight(fontweight);
+    
+    // Set the font style 
+    cell.setFontStyle(fontstyle);
+    
+    // Set the background color 
+    cell.setBackground(background);
+    
+    // Set the text color
+    cell.setFontColor(fontcolor);
+}    
+
+function onEdit(e) {
+    formatCell("A1","Arial",12,"bold","italic","yellow","blue");
+    formatCell("B1","Roboto",16,"normal","normal","white","red");
+}
+
 function fetchSmartLists() {
   // Your Follow Up Boss API key
   
@@ -176,8 +204,90 @@ function getAllPeople(smartListId) {
 
   return allPeople;
 }
+function processPeople() {
+  processAllPeople();
+  processPeopleToContactSoon();
+
+}
+
 
 function processAllPeople() {
+  // Get the API key from cell B2 on the "Settings" sheet
+  
+  // Get all people
+  var hotPeople = getAllPeople("36");
+  var ccPeople = getAllPeople("35");
+  var nurturePeople = getAllPeople("37");
+  var watchPeople = getAllPeople("38");
+  // Get the active spreadsheet
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName("All People");
+
+  
+  // Clear existing data in the sheet
+  // Clear the contents of column 1 and 2
+  sheet.clearContents();
+  var cell = sheet.getRange("E2");
+  cell.setValue("All People");
+  cell.setFontWeight("bold");
+  cell.setFontFamily("Arial");
+  cell.setFontSize(16);
+
+
+  // Write the headers
+  var headers = ['Hot','Notes', '', 'Current Clients', 'Notes','', 'Nurture', 'Notes','', 'Watch', 'Notes'];
+  //var headers = ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Created At', 'Updated At'];
+  sheet.getRange(4, 1, 1, headers.length).setValues([headers]).setFontWeight("bold");
+  
+
+  // Write the Hot data to the sheet
+  var data = [];
+  for (var i = 0; i < hotPeople.length; i++) {
+    var person = hotPeople[i];
+    //Logger.log(person)
+    data.push([
+      person.firstName + " " + person.lastName
+    ]);
+  }
+  sheet.getRange(5, 1, data.length, data[0].length).setValues(data);
+
+  // Write the Current clients data to the sheet
+  var data = [];
+  for (var i = 0; i < ccPeople.length; i++) {
+    var person = ccPeople[i];
+    //Logger.log(person)
+    data.push([
+      person.firstName + " " + person.lastName
+    ]);
+  }
+  sheet.getRange(5, 4, data.length, data[0].length).setValues(data);
+
+  // Write the Nurture clients data to the sheet
+  var data = [];
+  for (var i = 0; i < nurturePeople.length; i++) {
+    var person = nurturePeople[i];
+    //Logger.log(person)
+    data.push([
+      person.firstName + " " + person.lastName
+    ]);
+  }
+  sheet.getRange(5, 7, data.length, data[0].length).setValues(data);
+
+  // Write the Watch clients data to the sheet
+  var data = [];
+  for (var i = 0; i < watchPeople.length; i++) {
+    var person = watchPeople[i];
+    //Logger.log(person)
+    data.push([
+      person.firstName + " " + person.lastName
+    ]);
+  }
+  sheet.getRange(5, 10, data.length, data[0].length).setValues(data);
+
+
+}
+
+function processPeopleToContactSoon() {
   // Get the API key from cell B2 on the "Settings" sheet
   
   // Get all people
@@ -190,16 +300,25 @@ function processAllPeople() {
   // 6 = Nurture
   // 32 = Watch
   // Get the active spreadsheet
-  var sheet = spreadsheet.getSheets()[0];
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName("Contact Soon");
+
   
   // Clear existing data in the sheet
   // Clear the contents of column 1 and 2
   sheet.clearContents();
+  var cell = sheet.getRange("E2");
+  cell.setValue("Contact Soon");
+  cell.setFontWeight("bold");
+  cell.setFontFamily("Arial");
+  cell.setFontSize(16);
+ 
+
   
   // Write the headers
   var headers = ['Hot','Notes', '', 'Current Clients', 'Notes','', 'Nurture', 'Notes','', 'Watch', 'Notes'];
   //var headers = ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Created At', 'Updated At'];
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  sheet.getRange(4, 1, 1, headers.length).setValues([headers]).setFontWeight("bold");
   
 
   // Write the Hot data to the sheet
@@ -211,7 +330,7 @@ function processAllPeople() {
       person.firstName + " " + person.lastName
     ]);
   }
-  sheet.getRange(2, 1, data.length, data[0].length).setValues(data);
+  sheet.getRange(5, 1, data.length, data[0].length).setValues(data);
 
   // Write the Current clients data to the sheet
   var data = [];
@@ -222,7 +341,7 @@ function processAllPeople() {
       person.firstName + " " + person.lastName
     ]);
   }
-  sheet.getRange(2, 4, data.length, data[0].length).setValues(data);
+  sheet.getRange(5, 4, data.length, data[0].length).setValues(data);
 
   // Write the Nurture clients data to the sheet
   var data = [];
@@ -233,7 +352,7 @@ function processAllPeople() {
       person.firstName + " " + person.lastName
     ]);
   }
-  sheet.getRange(2, 7, data.length, data[0].length).setValues(data);
+  sheet.getRange(5, 7, data.length, data[0].length).setValues(data);
 
   // Write the Watch clients data to the sheet
   var data = [];
@@ -244,8 +363,7 @@ function processAllPeople() {
       person.firstName + " " + person.lastName
     ]);
   }
-  sheet.getRange(2, 10, data.length, data[0].length).setValues(data);
+  sheet.getRange(5, 10, data.length, data[0].length).setValues(data);
 
 
 }
-
